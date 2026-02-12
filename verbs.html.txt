@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Неправильные глаголы — тренажёр</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .game-box {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 32px;
+            padding: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        
+        .sub {
+            text-align: center;
+            color: #666;
+            margin-bottom: 24px;
+            font-size: 1.1rem;
+        }
+        
+        .score-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #f3f4f6;
+            padding: 16px 24px;
+            border-radius: 60px;
+            margin-bottom: 32px;
+        }
+        
+        .score {
+            background: #4f46e5;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+        }
+        
+        .progress {
+            color: #1f2937;
+            font-weight: 500;
+        }
+        
+        .card {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 20px;
+            padding: 32px;
+            margin-bottom: 24px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card:hover {
+            border-color: #4f46e5;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.2);
+        }
+        
+        .english-word {
+            font-size: 3.5rem;
+            font-weight: 800;
+            color: #111827;
+            margin-bottom: 8px;
+        }
+        
+        .russian-hint {
+            font-size: 1.3rem;
+            color: #6b7280;
+            font-style: italic;
+        }
+        
+        .answer-area {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        
+        input {
+            padding: 16px 20px;
+            font-size: 1.1rem;
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            outline: none;
+            transition: all 0.3s;
+            width: 100%;
+        }
+        
+        input:focus {
+            border-color: #4f46e5;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+        }
+        
+        button {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        button:hover {
+            background: #4338ca;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4);
+        }
+        
+        .feedback {
+            text-align: center;
+            padding: 16px;
+            border-radius: 12px;
+            font-weight: 500;
+            margin-top: 16px;
+            display: none;
+        }
+        
+        .feedback.show {
+            display: block;
+        }
+        
+        .feedback.correct {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #10b981;
+        }
+        
+        .feedback.wrong {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 2px solid #ef4444;
+        }
+        
+        .hint-btn {
+            background: #9ca3af;
+            margin-left: 8px;
+        }
+        
+        .verbs-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 24px;
+        }
+        
+        .verb-badge {
+            background: #f3f4f6;
+            padding: 12px;
+            border-radius: 12px;
+            text-align: center;
+            font-size: 0.9rem;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .verb-badge strong {
+            display: block;
+            font-size: 1.1rem;
+            color: #4f46e5;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-box">
+        <h1>⚡ IRREGULAR VERBS</h1>
+        <div class="sub">тренажёр неправильных глаголов</div>
+        
+        <div class="score-panel">
+            <span class="progress" id="progress-text">Глагол 1 из 10</span>
+            <span class="score" id="score-text">✅ 0 / 10</span>
+        </div>
+        
+        <div class="card" id="verb-card">
+            <div class="english-word" id="infinitive">go</div>
+            <div class="russian-hint" id="russian">идти, ехать</div>
+        </div>
+        
+        <div class="answer-area">
+            <input type="text" id="answer-input" placeholder="Введите вторую форму (Past Simple)" autocomplete="off" autofocus>
+            <button id="check-btn">Проверить →</button>
+        </div>
+        
+        <div class="feedback" id="feedback"></div>
+        
+        <div style="display: flex; gap: 12px; margin-top: 16px;">
+            <button id="next-btn" style="flex: 1; background: #10b981;">➡️ Следующий глагол</button>
+            <button id="hint-btn" style="background: #f59e0b;">🔍 Подсказка</button>
+        </div>
+        
+        <div style="margin-top: 32px;">
+            <h3 style="color: #374151; margin-bottom: 16px;">📚 Список глаголов в этом уроке:</h3>
+            <div class="verbs-grid" id="verbs-list"></div>
+        </div>
+    </div>
+
+    <script>
+        const VERBS = [
+            { base: "go", past: "went", russian: "идти, ехать" },
+            { base: "eat", past: "ate", russian: "есть, кушать" },
+            { base: "drink", past: "drank", russian: "пить" },
+            { base: "see", past: "saw", russian: "видеть" },
+            { base: "come", past: "came", russian: "приходить" },
+            { base: "take", past: "took", russian: "брать" },
+            { base: "buy", past: "bought", russian: "покупать" },
+            { base: "write", past: "wrote", russian: "писать" },
+            { base: "speak", past: "spoke", russian: "говорить" },
+            { base: "read", past: "read", russian: "читать" }
+        ];
+        
+        let currentIndex = 0;
+        let correctCount = 0;
+        let answered = false;
+        
+        const infinitiveEl = document.getElementById('infinitive');
+        const russianEl = document.getElementById('russian');
+        const answerInput = document.getElementById('answer-input');
+        const checkBtn = document.getElementById('check-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const hintBtn = document.getElementById('hint-btn');
+        const feedbackEl = document.getElementById('feedback');
+        const progressText = document.getElementById('progress-text');
+        const scoreText = document.getElementById('score-text');
+        const verbsList = document.getElementById('verbs-list');
+        
+        // Показываем список всех глаголов
+        function renderVerbsList() {
+            verbsList.innerHTML = VERBS.map(v => 
+                `<div class="verb-badge">
+                    <strong>${v.base}</strong>
+                    ${v.past}
+                    <div style="font-size: 0.8rem; color: #6b7280;">${v.russian}</div>
+                </div>`
+            ).join('');
+        }
+        
+        function updateDisplay() {
+            const verb = VERBS[currentIndex];
+            infinitiveEl.textContent = verb.base;
+            russianEl.textContent = verb.russian;
+            progressText.textContent = `Глагол ${currentIndex + 1} из ${VERBS.length}`;
+            scoreText.textContent = `✅ ${correctCount} / ${VERBS.length}`;
+            answerInput.value = '';
+            answerInput.focus();
+            answered = false;
+            feedbackEl.classList.remove('show', 'correct', 'wrong');
+        }
+        
+        function checkAnswer() {
+            if (answered) return;
+            
+            const userAnswer = answerInput.value.trim().toLowerCase();
+            const correctAnswer = VERBS[currentIndex].past.toLowerCase();
+            
+            if (userAnswer === '') {
+                feedbackEl.textContent = '✏️ Введите ответ!';
+                feedbackEl.className = 'feedback show wrong';
+                return;
+            }
+            
+            if (userAnswer === correctAnswer) {
+                feedbackEl.textContent = '✅ Правильно! Так держать!';
+                feedbackEl.className = 'feedback show correct';
+                if (!answered) {
+                    correctCount++;
+                    scoreText.textContent = `✅ ${correctCount} / ${VERBS.length}`;
+                }
+                answered = true;
+            } else {
+                feedbackEl.textContent = `❌ Неправильно. Попробуй ещё раз!`;
+                feedbackEl.className = 'feedback show wrong';
+            }
+        }
+        
+        function nextVerb() {
+            if (currentIndex < VERBS.length - 1) {
+                currentIndex++;
+                updateDisplay();
+            } else {
+                if (correctCount === VERBS.length) {
+                    feedbackEl.textContent = '🏆 ПОЗДРАВЛЯЮ! Ты выучил все глаголы!';
+                } else {
+                    feedbackEl.textContent = '🎯 Ты прошёл все глаголы! Начни заново и попробуй ещё!';
+                }
+                feedbackEl.className = 'feedback show correct';
+            }
+        }
+        
+        function showHint() {
+            const verb = VERBS[currentIndex];
+            const hint = verb.past;
+            const maskedHint = hint[0] + '_'.repeat(hint.length - 1);
+            feedbackEl.textContent = `💡 Подсказка: слово начинается на "${hint[0]}", всего букв: ${hint.length}`;
+            feedbackEl.className = 'feedback show';
+        }
+        
+        // Инициализация
+        renderVerbsList();
+        updateDisplay();
+        
+        // Обработчики
+        checkBtn.addEventListener('click', checkAnswer);
+        nextBtn.addEventListener('click', nextVerb);
+        hintBtn.addEventListener('click', showHint);
+        
+        answerInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+    </script>
+</body>
+</html>
