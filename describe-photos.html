@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Describe the photos! — тренажёр</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: white;
+            text-shadow: 3px 3px 0 rgba(0,0,0,0.1);
+            margin-bottom: 8px;
+        }
+        
+        .sub {
+            font-size: 1.2rem;
+            color: rgba(255,255,255,0.9);
+        }
+        
+        .game-box {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 32px;
+            padding: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+        
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            background: #f3f4f6;
+            padding: 12px 24px;
+            border-radius: 60px;
+        }
+        
+        .counter {
+            font-weight: 600;
+            color: #374151;
+            font-size: 1.1rem;
+        }
+        
+        .score {
+            background: #f59e0b;
+            color: white;
+            padding: 6px 20px;
+            border-radius: 40px;
+            font-weight: 600;
+        }
+        
+        .flash-card {
+            background: white;
+            border: 3px solid #e5e7eb;
+            border-radius: 32px;
+            overflow: hidden;
+            margin-bottom: 24px;
+        }
+        
+        .card-image {
+            width: 100%;
+            height: 250px;
+            background: #f3f4f6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 5rem;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .card-content {
+            padding: 30px;
+        }
+        
+        .text-container {
+            background: #f9fafb;
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 24px;
+            border: 2px solid #e5e7eb;
+            max-height: 350px;
+            overflow-y: auto;
+            line-height: 2;
+        }
+        
+        .text-content {
+            font-size: 1.1rem;
+            color: #1f2937;
+        }
+        
+        .input-wrapper {
+            display: inline-block;
+            vertical-align: middle;
+            margin: 0 4px;
+            text-align: center;
+        }
+        
+        .input-field {
+            display: block;
+            width: 100px;
+            padding: 4px 8px;
+            border: 2px solid #f59e0b;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #92400e;
+            text-align: center;
+            background: #fef3c7;
+            outline: none;
+        }
+        
+        .input-field:focus {
+            border-color: #d97706;
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+        }
+        
+        .input-hint {
+            display: block;
+            font-size: 0.7rem;
+            color: #6b7280;
+            font-style: italic;
+            margin-top: 2px;
+        }
+        
+        .words-container {
+            background: #f3f4f6;
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .words-title {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 16px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        .words-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        
+        .word-item {
+            padding: 10px 6px;
+            background: white;
+            border: 2px solid #f59e0b;
+            border-radius: 40px;
+            font-weight: 600;
+            color: #f59e0b;
+            text-align: center;
+            font-size: 0.95rem;
+            cursor: default;
+        }
+        
+        .word-item.used {
+            opacity: 0.3;
+            text-decoration: line-through;
+        }
+        
+        .navigation {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        
+        .nav-btn {
+            flex: 1;
+            padding: 16px;
+            border: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            background: white;
+            border: 2px solid #e5e7eb;
+            color: #374151;
+        }
+        
+        .nav-btn.primary {
+            background: #f59e0b;
+            border-color: #f59e0b;
+            color: white;
+        }
+        
+        .nav-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .thumbnails {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin: 24px 0 16px;
+            flex-wrap: wrap;
+        }
+        
+        .thumbnail {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            background: #e5e7eb;
+            border: 2px solid transparent;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: all 0.2s;
+        }
+        
+        .thumbnail:hover {
+            transform: scale(1.1);
+        }
+        
+        .thumbnail.active {
+            border-color: #f59e0b;
+            transform: scale(1.1);
+        }
+        
+        .thumbnail.completed {
+            position: relative;
+        }
+        
+        .thumbnail.completed::after {
+            content: "✓";
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 20px;
+            height: 20px;
+            background: #10b981;
+            color: white;
+            border-radius: 50%;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+        }
+        
+        .feedback {
+            text-align: center;
+            padding: 16px;
+            border-radius: 16px;
+            font-weight: 500;
+            margin: 16px 0;
+            display: none;
+        }
+        
+        .feedback.show {
+            display: block;
+        }
+        
+        .feedback.correct {
+            background: #d1fae5;
+            color: #065f46;
+            border: 2px solid #10b981;
+        }
+        
+        .feedback.warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffc107;
+        }
+        
+        .results-area {
+            display: none;
+        }
+        
+        .results-area.show {
+            display: block;
+        }
+        
+        .final-score {
+            text-align: center;
+            font-size: 3rem;
+            font-weight: 800;
+            margin: 24px 0;
+            color: #f59e0b;
+        }
+        
+        .results-table {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            margin: 24px 0;
+            max-height: 450px;
+            overflow-y: auto;
+        }
+        
+        .results-header {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            font-weight: 700;
+            color: #f59e0b;
+            padding: 12px 0;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .result-row {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+            align-items: center;
+        }
+        
+        .result-row.correct {
+            background: #f0fff4;
+        }
+        
+        .result-row.wrong {
+            background: #fff5f5;
+        }
+        
+        .restart-btn {
+            background: #f59e0b;
+            color: white;
+            border: none;
+            padding: 18px 36px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            border-radius: 60px;
+            cursor: pointer;
+            width: 100%;
+            max-width: 300px;
+            margin: 0 auto;
+            display: block;
+        }
+        
+        .restart-btn:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 500px) {
+            .words-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .card-image {
+                height: 180px;
+                font-size: 4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📸 DESCRIBE THE PHOTOS!</h1>
+            <div class="sub">Впиши слова в пропуски</div>
+        </header>
+        
+        <div class="game-box">
+            <div id="game-area">
+                <div class="progress-header">
+                    <span class="counter" id="card-counter">1 / 6</span>
+                    <span class="score" id="score-display">✅ 0 / 6</span>
+                </div>
+                
+                <div class="flash-card">
+                    <div class="card-image" id="card-image">
+                        <div class="image-placeholder" id="image-placeholder">📸</div>
+                    </div>
+                    <div class="card-content">
+                        <div class="text-container">
+                            <div class="text-content" id="text-content"></div>
+                        </div>
+                        
+                        <div class="words-container">
+                            <div class="words-title">📝 Слова для вставки:</div>
+                            <div class="words-grid" id="words-grid"></div>
+                        </div>
+                        
+                        <div class="feedback" id="feedback"></div>
+                    </div>
+                </div>
+                
+                <div class="thumbnails" id="thumbnails"></div>
+                
+                <div class="navigation">
+                    <button class="nav-btn" id="prev-btn" disabled>◀ Назад</button>
+                    <button class="nav-btn primary" id="next-btn">Вперёд ▶</button>
+                </div>
+                
+                <button class="nav-btn primary" id="finish-btn" style="margin-top: 12px;">✅ Проверить</button>
+            </div>
+            
+            <div id="results-area" class="results-area">
+                <div class="final-score" id="final-score">🎯 0/6</div>
+                <div class="results-table" id="results-table"></div>
+                <button id="restart-btn" class="restart-btn">🔄 Заново</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ТЕКСТЫ С ПРОПУСКАМИ
+        const TEXTS = [
+            {
+                // Text 1
+                fullText: 'Hello! My name [1] Lily. I [2] six years old. This is a photo of me and my family. We are [3]. It is my [4] Tom, he is five years old. My [5], John and Sarah, are on the photo too. My father is from the UK, he is [6]. My mother is from France, she is [7]. It is Rex, he is [8] dog. He [9] a small dog, but he is very friendly! I am happy, because my family is together!',
+                blanks: ['is', 'am', 'in the park', 'brother', 'parents', 'British', 'French', 'our', 'is not'],
+                hints: ['to be', 'to be', 'place', 'family member', 'family members', 'nationality', 'nationality', 'possessive adjective', 'to be negative'],
+                extraWords: ['at home', 'sister', 'Russian'],
+                emoji: '👨‍👩‍👧‍👦'
+            },
+            {
+                // Text 2
+                fullText: 'Hi, I [1] Kate! I am eleven years old. This [2] a photo of my family. We are [3] in our living room. We are from the USA and we are [4]. You can see my parents – Tom and Maria, [5] cat Whiskers and [6] little sister. My sister\'s name is Miranda and she is only [7] years old.',
+                blanks: ['am', 'is', 'at home', 'Americans', 'our', 'my', 'three'],
+                hints: ['to be', 'to be', 'place', 'nationality', 'possessive adjective', 'possessive adjective', 'number'],
+                extraWords: ['thirteen', 'Polish', 'are'],
+                emoji: '🏠'
+            },
+            {
+                // Text 3
+                fullText: 'Hi, my name [1] Erica! Me and my sister Lisa [2] from the UK, London. But in this photo, we are [3] in Spain! A woman in a hat is our [4] Mary, she is our mom\'s sister. A man is [5] husband, his name [6] Leo. He is from Spain, so he is [7]. Spain is a very beautiful country! I love [8] holidays!',
+                blanks: ['is', 'are', 'on holiday', 'aunt', 'her', 'is', 'Spanish', 'our'],
+                hints: ['to be', 'to be', 'place', 'family member', 'possessive adjective', 'to be', 'nationality', 'possessive adjective'],
+                extraWords: ['uncle', 'are not', 'cousin'],
+                emoji: '🌴'
+            },
+            {
+                // Text 4
+                fullText: 'Hello, my name is Andrey, I am from [1] and I am Russian. I am [2] years old. In this photo, I am [3]. [4] best friends Anton and Lera [5] here too. I [6] happy in the photo and I am not a good student. But I like football and I [7] very good at it. My mom and dad are [8] today.',
+                blanks: ['Russia', 'nine', 'at school', 'my', 'are', 'am not', 'am', 'at home'],
+                hints: ['country', 'number', 'place', 'possessive adjective', 'to be', 'to be negative', 'to be', 'place'],
+                extraWords: ['ninety', 'is not', 'Poland'],
+                emoji: '🏫'
+            },
+            {
+                // Text 5
+                fullText: 'Hello! My name is Ben and I [1] from Poland. And today is [2] grandmother\'s birthday! She is [3] years old today. We are [4]. My parents and my [5] are here too. But my uncle Sam [6] here, he is [7] in Italy. But we [8] happy!',
+                blanks: ['am', 'my', 'seventy', 'at a party', 'grandfather', 'is not', 'on holiday', 'are'],
+                hints: ['to be', 'possessive adjective', 'number', 'place', 'family member', 'to be negative', 'place', 'to be'],
+                extraWords: ['seventeen', 'are not', 'Poland'],
+                emoji: '🎂'
+            },
+            {
+                // Text 6
+                fullText: 'Hi, my name [1] Sarah. I am seventeen years old and this is my favorite photo. A boy and a girl are my brother and [2]. They are twins and they are [3] years old. We are from Italy and we are [4], but in the photo, we are in France at my grandparents\' house. They are in the photo too with our uncle Robert. He is thirty years old. He is [5] father\'s brother. We are [6] together.',
+                blanks: ['is', 'sister', 'eight', 'Italians', 'in the garden', 'our'],
+                hints: ['to be', 'family member', 'number', 'nationality', 'place', 'possessive adjective'],
+                extraWords: ['eighty', 'French', 'are'],
+                emoji: '🌳'
+            }
+        ];
+
+        // Состояние игры
+        let currentIndex = 0;
+        let userAnswers = TEXTS.map(() => ({}));
+
+        // DOM элементы
+        const gameArea = document.getElementById('game-area');
+        const resultsArea = document.getElementById('results-area');
+        const textContent = document.getElementById('text-content');
+        const wordsGrid = document.getElementById('words-grid');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const finishBtn = document.getElementById('finish-btn');
+        const restartBtn = document.getElementById('restart-btn');
+        const cardCounter = document.getElementById('card-counter');
+        const scoreDisplay = document.getElementById('score-display');
+        const feedback = document.getElementById('feedback');
+        const thumbnails = document.getElementById('thumbnails');
+        const finalScore = document.getElementById('final-score');
+        const resultsTable = document.getElementById('results-table');
+        const imagePlaceholder = document.getElementById('image-placeholder');
+
+        // Функция отображения текста с полями ввода и подсказками под ними
+        function renderText() {
+            const text = TEXTS[currentIndex];
+            let html = '';
+            
+            // Разбиваем текст на части и заменяем [1], [2] и т.д. на поля с подсказками
+            let parts = text.fullText.split(/(\[\d+\])/g);
+            
+            parts.forEach(part => {
+                const match = part.match(/\[(\d+)\]/);
+                if (match) {
+                    const index = parseInt(match[1]);
+                    const answer = userAnswers[currentIndex][index] || '';
+                    const hint = text.hints[index - 1];
+                    
+                    html += `<span class="input-wrapper">
+                        <input type="text" class="input-field" data-index="${index}" value="${answer}" placeholder="___">
+                        <span class="input-hint">${hint}</span>
+                    </span>`;
+                } else {
+                    html += part;
+                }
+            });
+            
+            textContent.innerHTML = html;
+            
+            // Добавляем обработчики для полей ввода
+            document.querySelectorAll('.input-field').forEach(input => {
+                input.addEventListener('input', (e) => {
+                    const index = e.target.dataset.index;
+                    const value = e.target.value.trim();
+                    
+                    if (value) {
+                        userAnswers[currentIndex][index] = value;
+                    } else {
+                        delete userAnswers[currentIndex][index];
+                    }
+                    
+                    updateScore();
+                    updateThumbnails();
+                    renderWords();
+                });
+            });
+        }
+
+        // Функция отображения списка слов
+        function renderWords() {
+            const text = TEXTS[currentIndex];
+            const allWords = [...text.blanks, ...text.extraWords];
+            const usedWords = Object.values(userAnswers[currentIndex]);
+            
+            // Сортируем слова для удобства
+            allWords.sort();
+            
+            wordsGrid.innerHTML = '';
+            
+            allWords.forEach(word => {
+                // Проверяем, используется ли слово (регистронезависимо)
+                const isUsed = usedWords.some(used => used.toLowerCase() === word.toLowerCase());
+                const div = document.createElement('div');
+                div.className = `word-item ${isUsed ? 'used' : ''}`;
+                div.textContent = word;
+                wordsGrid.appendChild(div);
+            });
+        }
+
+        // Обновление счёта
+        function updateScore() {
+            const completedCount = userAnswers.filter((answers, index) => 
+                Object.keys(answers).length === TEXTS[index].blanks.length
+            ).length;
+            
+            scoreDisplay.textContent = `✅ ${completedCount} / ${TEXTS.length}`;
+        }
+
+        // Обновление миниатюр
+        function updateThumbnails() {
+            document.querySelectorAll('.thumbnail').forEach((thumb, index) => {
+                const isCompleted = Object.keys(userAnswers[index]).length === TEXTS[index].blanks.length;
+                thumb.className = `thumbnail ${isCompleted ? 'completed' : ''} ${index === currentIndex ? 'active' : ''}`;
+            });
+        }
+
+        // Создание миниатюр
+        function renderThumbnails() {
+            thumbnails.innerHTML = '';
+            
+            TEXTS.forEach((text, index) => {
+                const thumb = document.createElement('div');
+                thumb.className = 'thumbnail';
+                thumb.textContent = text.emoji;
+                
+                thumb.addEventListener('click', () => {
+                    currentIndex = index;
+                    imagePlaceholder.textContent = text.emoji;
+                    renderText();
+                    renderWords();
+                    updateThumbnails();
+                    cardCounter.textContent = `${index + 1} / ${TEXTS.length}`;
+                });
+                
+                thumbnails.appendChild(thumb);
+            });
+            
+            updateThumbnails();
+        }
+
+        // Навигация
+        prevBtn.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+                imagePlaceholder.textContent = TEXTS[currentIndex].emoji;
+                renderText();
+                renderWords();
+                updateThumbnails();
+                cardCounter.textContent = `${currentIndex + 1} / ${TEXTS.length}`;
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (currentIndex < TEXTS.length - 1) {
+                currentIndex++;
+                imagePlaceholder.textContent = TEXTS[currentIndex].emoji;
+                renderText();
+                renderWords();
+                updateThumbnails();
+                cardCounter.textContent = `${currentIndex + 1} / ${TEXTS.length}`;
+            }
+        });
+
+        // Проверка результатов
+        finishBtn.addEventListener('click', () => {
+            // Проверяем, все ли тексты заполнены
+            const incomplete = userAnswers.filter((answers, index) => 
+                Object.keys(answers).length !== TEXTS[index].blanks.length
+            ).length;
+            
+            if (incomplete > 0) {
+                feedback.textContent = `⚠️ Осталось заполнить ${incomplete} текстов`;
+                feedback.className = 'feedback show warning';
+                return;
+            }
+            
+            // Собираем результаты
+            const results = TEXTS.map((text, index) => {
+                const answers = userAnswers[index];
+                let correct = 0;
+                
+                text.blanks.forEach((correctWord, i) => {
+                    if (answers[i + 1]?.toLowerCase() === correctWord.toLowerCase()) correct++;
+                });
+                
+                return {
+                    text: `Text ${index + 1}`,
+                    correctCount: correct,
+                    totalCount: text.blanks.length,
+                    percentage: Math.round((correct / text.blanks.length) * 100)
+                };
+            });
+            
+            const totalCorrect = results.reduce((sum, r) => sum + r.correctCount, 0);
+            const totalAll = results.reduce((sum, r) => sum + r.totalCount, 0);
+            
+            // Показываем результаты
+            gameArea.style.display = 'none';
+            resultsArea.classList.add('show');
+            
+            finalScore.textContent = `🎯 ${totalCorrect}/${totalAll}`;
+            
+            resultsTable.innerHTML = `
+                <div class="results-header">
+                    <div>Текст</div>
+                    <div>Результат</div>
+                    <div>Правильно</div>
+                </div>
+                ${results.map(r => `
+                    <div class="result-row ${r.percentage === 100 ? 'correct' : 'wrong'}">
+                        <div>${r.text}</div>
+                        <div>${r.correctCount}/${r.totalCount}</div>
+                        <div style="font-weight: 600; color: ${r.percentage === 100 ? '#065f46' : '#991b1b'}">
+                            ${r.percentage}%
+                        </div>
+                    </div>
+                `).join('')}
+            `;
+        });
+
+        // Перезапуск
+        restartBtn.addEventListener('click', () => {
+            currentIndex = 0;
+            userAnswers = TEXTS.map(() => ({}));
+            
+            gameArea.style.display = 'block';
+            resultsArea.classList.remove('show');
+            
+            imagePlaceholder.textContent = TEXTS[0].emoji;
+            renderText();
+            renderWords();
+            updateScore();
+            renderThumbnails();
+            cardCounter.textContent = `1 / ${TEXTS.length}`;
+        });
+
+        // Инициализация
+        function init() {
+            renderThumbnails();
+            imagePlaceholder.textContent = TEXTS[0].emoji;
+            renderText();
+            renderWords();
+            updateScore();
+            cardCounter.textContent = `1 / ${TEXTS.length}`;
+        }
+
+        init();
+    </script>
+</body>
+</html>
