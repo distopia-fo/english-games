@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>English Games — мои интерактивные игры</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(145deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        
+        h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            color: white;
+            text-shadow: 4px 4px 0 rgba(0,0,0,0.1);
+            margin-bottom: 16px;
+        }
+        
+        .subhead {
+            font-size: 1.4rem;
+            color: rgba(255,255,255,0.9);
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+        
+        /* Панель поиска и фильтров */
+        .controls-panel {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 24px;
+            margin-bottom: 32px;
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.5);
+        }
+        
+        .search-box {
+            margin-bottom: 20px;
+        }
+        
+        .search-label {
+            display: block;
+            color: #4a5568;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 16px 20px;
+            font-size: 1.1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            outline: none;
+            transition: all 0.3s;
+            background: white;
+        }
+        
+        .search-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .filter-section {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .filter-label {
+            color: #4a5568;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .level-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        .level-btn {
+            padding: 10px 20px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            color: #4a5568;
+            font-weight: 600;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+        
+        .level-btn:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+        }
+        
+        .level-btn.active {
+            background: #667eea;
+            border-color: #667eea;
+            color: white;
+        }
+        
+        .clear-btn {
+            padding: 10px 20px;
+            background: #f7fafc;
+            border: 2px dashed #cbd5e0;
+            color: #718096;
+            font-weight: 600;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+        
+        .clear-btn:hover {
+            background: #edf2f7;
+            border-color: #a0aec0;
+        }
+        
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 48px;
+        }
+        
+        .game-card {
+            background: white;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 20px 35px -8px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            border: 1px solid rgba(255,255,255,0.3);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            opacity: 1;
+            transform: scale(1);
+        }
+        
+        .game-card.hidden {
+            display: none;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 45px -10px rgba(0,0,0,0.3);
+        }
+        
+        .game-icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+        
+        .game-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: #2d3748;
+            margin-bottom: 8px;
+        }
+        
+        .game-description {
+            color: #718096;
+            margin-bottom: 20px;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+        
+        .game-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            color: #4a5568;
+            font-size: 0.9rem;
+        }
+        
+        .level {
+            background: #e9d8fd;
+            color: #553c9a;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .btn {
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            text-align: center;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: rgba(255,255,255,0.9);
+            border-radius: 24px;
+            grid-column: 1 / -1;
+            color: #4a5568;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.5rem;
+            margin-bottom: 12px;
+            color: #2d3748;
+        }
+        
+        .footer {
+            text-align: center;
+            color: rgba(255,255,255,0.8);
+            margin-top: 48px;
+            padding-top: 24px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .badge-new {
+            background: #f59e0b;
+            color: white;
+            font-size: 0.8rem;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-left: 8px;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎮 English Games</h1>
+            <div class="subhead">Моя коллекция интерактивных игр для изучения английского</div>
+        </header>
+        
+        <!-- Панель поиска и фильтров -->
+        <div class="controls-panel">
+            <div class="search-box">
+                <div class="search-label">🔍 Поиск игр</div>
+                <input type="text" id="search-input" class="search-input" placeholder="Введите название игры..." autocomplete="off">
+            </div>
+            
+            <div class="filter-section">
+                <span class="filter-label">📊 Уровень:</span>
+                <div class="level-filters" id="level-filters">
+                    <button class="level-btn active" data-level="all">Все</button>
+                    <button class="level-btn" data-level="A1">A1</button>
+                    <button class="level-btn" data-level="A2">A2</button>
+                    <button class="level-btn" data-level="B1">B1</button>
+                </div>
+                <button id="clear-filters" class="clear-btn">✕ Сбросить</button>
+            </div>
+        </div>
+        
+        <!-- Сетка игр -->
+        <div class="games-grid" id="games-grid"></div>
+        
+        <div class="footer">
+            <p>Сделано с ❤️ для моих студентов</p>
+        </div>
+    </div>
+
+    <script>
+        // БАЗА ДАННЫХ ИГР
+        const games = [
+            {
+                id: 1,
+                title: "🐾 Животные",
+                description: "Найди пару: английское слово и русский перевод. Кошки, собаки, кролики и лягушки.",
+                icon: "🐕",
+                level: "A1",
+                url: "#",
+                date: "Скоро"
+            },
+            {
+                id: 2,
+                title: "⚡ Неправильные глаголы",
+                description: "Тренажёр второй формы. Введи правильный ответ и получи подробные результаты.",
+                icon: "📚",
+                level: "A2",
+                url: "verbs.html",
+                date: "2026-02-13"
+            },
+            {
+                id: 3,
+                title: "🍎 Фрукты",
+                description: "Изучаем названия фруктов на английском. Скоро появится!",
+                icon: "🍎",
+                level: "A1",
+                url: "#",
+                date: "Скоро"
+            },
+            {
+                id: 4,
+                title: "🔤 Глагол to be (часть 1)",
+                description: "Тренажёр утвердительных и отрицательных форм глагола to be с drag-and-drop механикой.",
+                icon: "🔤",
+                level: "A1",
+                url: "to-be.html",
+                date: "2026-02-14"
+            },
+            {
+                id: 5,
+                title: "📸 Describe the photos!",
+                description: "Опиши фотографии: заполни пропуски подходящими словами. Семья, страны, числа и притяжательные местоимения.",
+                icon: "📸",
+                level: "A1",
+                url: "describe-photos.html",
+                date: "2026-02-15"
+            },
+            {
+                id: 6,
+                title: "🏠 House Anagrams",
+                description: "Собери слово из букв по картинке. Тренируй лексику по теме 'Дом': комнаты, мебель и предметы интерьера.",
+                icon: "🏠",
+                level: "A1",
+                url: "house-anagrams.html",
+                date: "2026-04-26"
+            },
+            {
+                id: 7,
+                title: "🏙️ Города и достопримечательности",
+                description: "Угадай город по описанию и фотографии.",
+                icon: "🗽",
+                level: "B1",
+                url: "#",
+                date: "Скоро"
+            },
+            {
+                id: 8,
+                title: "📝 Артикли a/an/the",
+                description: "Вставь правильный артикль в предложение.",
+                icon: "📌",
+                level: "A2",
+                url: "#",
+                date: "Скоро"
+            }
+        ];
+
+        // Текущее состояние фильтров
+        let currentLevelFilter = 'all';
+        let currentSearchQuery = '';
+
+        // DOM элементы
+        const grid = document.getElementById('games-grid');
+        const searchInput = document.getElementById('search-input');
+        const levelBtns = document.querySelectorAll('.level-btn');
+        const clearBtn = document.getElementById('clear-filters');
+
+        // Функция фильтрации игр
+        function filterGames() {
+            return games.filter(game => {
+                const levelMatch = currentLevelFilter === 'all' || game.level === currentLevelFilter;
+                const searchMatch = currentSearchQuery === '' || 
+                    game.title.toLowerCase().includes(currentSearchQuery.toLowerCase()) ||
+                    game.description.toLowerCase().includes(currentSearchQuery.toLowerCase());
+                
+                return levelMatch && searchMatch;
+            });
+        }
+
+        // Функция отрисовки карточек игр
+        function renderGames() {
+            const filteredGames = filterGames();
+            grid.innerHTML = '';
+            
+            if (filteredGames.length === 0) {
+                const emptyState = document.createElement('div');
+                emptyState.className = 'empty-state';
+                emptyState.innerHTML = `
+                    <h3>😕 Игры не найдены</h3>
+                    <p>Попробуйте изменить параметры поиска или фильтрации</p>
+                `;
+                grid.appendChild(emptyState);
+                return;
+            }
+            
+            filteredGames.forEach(game => {
+                const card = document.createElement('div');
+                card.className = 'game-card';
+                
+                // Проверка для NEW badge (сегодняшняя дата)
+                const isNew = game.date === '2026-04-26' ? '<span class="badge-new">NEW</span>' : '';
+                
+                card.innerHTML = `
+                    <div class="game-icon">${game.icon}</div>
+                    <div class="game-title">${game.title} ${isNew}</div>
+                    <div class="game-description">${game.description}</div>
+                    <div class="game-meta">
+                        <span class="level">${game.level}</span>
+                        <span>📅 ${game.date}</span>
+                    </div>
+                    <a href="${game.url}" class="btn" ${game.url !== '#' ? 'target="_blank"' : ''}>
+                        ${game.url !== '#' ? '🎮 Играть' : '⏳ Скоро'}
+                    </a>
+                `;
+                
+                grid.appendChild(card);
+            });
+        }
+
+        // Обработчики
+        function handleSearch(e) {
+            currentSearchQuery = e.target.value;
+            renderGames();
+        }
+
+        function handleLevelFilter(level, btn) {
+            currentLevelFilter = level;
+            levelBtns.forEach(btn => btn.classList.remove('active'));
+            btn.classList.add('active');
+            renderGames();
+        }
+
+        function clearAllFilters() {
+            currentLevelFilter = 'all';
+            currentSearchQuery = '';
+            searchInput.value = '';
+            levelBtns.forEach(btn => {
+                if (btn.dataset.level === 'all') {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+            renderGames();
+        }
+
+        // Инициализация
+        function init() {
+            renderGames();
+            searchInput.addEventListener('input', handleSearch);
+            levelBtns.forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    handleLevelFilter(btn.dataset.level, btn);
+                });
+            });
+            clearBtn.addEventListener('click', clearAllFilters);
+        }
+
+        init();
+    </script>
+</body>
+</html>
